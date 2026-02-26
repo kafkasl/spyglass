@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Spyglass</string>
+    <string name="channel_name">Camera Server</string>
+    <string name="notification_title">Spyglass streaming</string>
+</resources>
