@@ -90,6 +90,16 @@ export DROIDCAM_IP=<phone-tailscale-ip>
 leye start   # connects to http://<phone>:4747/video
 ```
 
+## Next Session — Pick Up Here
+
+1. **Install on phone** — APK is already at `~/storage/downloads/spyglass.apk` on the phone
+   - `ssh a3 "termux-open ~/storage/downloads/spyglass.apk"` then tap Install
+   - Open app once → grant camera + audio + notification permissions
+   - Verify: `curl http://a3:4747/status`
+2. **Enable wireless ADB** (optional but recommended) — plug USB once, run `adb tcpip 5555`, then `adb connect a3:5555`. Enables remote `adb install` forever (until reboot).
+3. **E2E test** — once running: `/status`, `/snap`, `/video` via ffplay, then `leye start` integration
+4. **Consider rooting** the Mi A3 for fully headless management (see session notes)
+
 ## TODO / Known limitations
 - Audio streaming (`/audio`) is stubbed out — needs AudioRecord + AAC/Opus encoding
 - Recording is stubbed — needs MediaRecorder integration
