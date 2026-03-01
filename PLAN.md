@@ -1,71 +1,55 @@
-# Pixel 5 Setup Plan
+# Spyglass — Plan
 
-## Context
-- Pixel 5 is on Tailscale (resolves as `pixel-5`, IP `100.118.45.38`)
-- No Termux, no SSH, no ADB — just Tailscale running
-- This is a primary phone — no root, no wireless ADB, SSH via Tailscale only
-- Mi A3 (`a3`) already has Termux+SSH, needs Termux:Boot from F-Droid + Spyglass install
+## Completed
 
-## On the Pixel 5 (need phone in hand)
+### Mi A3 setup
+- [x] Install Termux:Boot (APK from F-Droid repo, scp + manual install)
+- [x] Open Termux:Boot once, battery → unrestricted
+- [x] Install Spyglass APK via `adb install` over Tailscale (silent, no taps)
+- [x] Grant camera + audio + notification permissions
+- [x] Enable wireless ADB: `adb tcpip 5555` (one-time USB, remote installs forever)
+- [x] Fix YUV→NV21 conversion (green/magenta artifacts), extract testable `YuvConverter`
+- [x] Verify: `/status`, `/snap`, `/video` all working
 
-### 1. Install apps from F-Droid
-- [ ] Termux
-- [ ] Termux:API
-- [ ] Termux:Boot (open it once so Android registers it)
-
-### 2. In Termux
+### Wireless ADB (Mi A3)
 ```bash
-pkg install openssh
-passwd          # set a temporary password (will disable after key copy)
-sshd            # start SSH server
-```
-
-### 3. Battery optimization
-Settings → Apps → Battery → Unrestricted for:
-- [ ] Termux
-- [ ] Termux:API
-- [ ] Termux:Boot
-- [ ] Tailscale
-
-### 4. From Mac
-```bash
-cd ~/go/github.com/kafkasl/spyglass
-bash scripts/phone-setup.sh
-# Choose: pixel-5
-# This will: copy SSH key, configure sshd to Tailscale-only, disable password auth,
-# add to ~/.ssh/config, deploy spyglass.apk
-```
-
-### 5. Back on phone
-- [ ] Tap install when spyglass.apk dialog appears
-- [ ] Open Spyglass → grant camera + audio + notification permissions
-
-### 6. Verify from Mac
-```bash
-ssh pixel-5 "echo ok"                    # SSH works
-curl http://pixel-5:4747/status           # Spyglass running
-curl http://pixel-5:4747/snap > test.jpg  # Snapshot works
-ffplay http://pixel-5:4747/video          # Video stream works
-```
-
-## Mi A3 (while you have phones out)
-
-### Needs physical tap
-- [x] Install Termux:Boot from F-Droid (boot script already at `~/.termux/boot/start-sshd.sh`)
-- [x] Open Termux:Boot once
-- [x] Battery → Unrestricted for Termux:Boot
-- [x] Install Spyglass APK (via `adb install` over Tailscale — no tap needed)
-- [x] Open Spyglass → grant permissions
-
-### Wireless ADB (enabled)
-```bash
-# Enabled via USB once, now permanent over Tailscale
+export PATH="$HOME/Library/Android/sdk/platform-tools:$PATH"
 adb connect 100.100.122.107:5555
-adb install app/build/outputs/apk/debug/app-debug.apk  # silent install, no taps
+adb install app/build/outputs/apk/debug/app-debug.apk
 ```
 
-### Verify
-- [x] `curl http://100.100.122.107:4747/status` — working (1280x720@15fps, battery 100%)
-- [x] `/snap` — JPEG OK
-- [x] `/video` — MJPEG streaming OK
-- [ ] `leye start` — drop-in DroidCam replacement test
+## Next — OSS packaging
+
+### README.md
+- [ ] What Spyglass is (one-paragraph pitch)
+- [ ] Why it exists (DroidCam replacement: open-source, no ads, headless, API-first)
+- [ ] Quick start (install APK → grant permissions → curl endpoints)
+- [ ] All HTTP endpoints with examples
+- [ ] Config options explained
+- [ ] Building from source
+- [ ] Deploying to a phone (ADB, SSH+termux-open)
+
+### OSS cleanup
+- [ ] Review what's in the repo — remove personal/local files
+- [ ] LICENSE (Apache 2.0 or MIT)
+- [ ] .gitignore audit
+- [ ] GitHub release with pre-built APK
+
+## Pending — Pixel 5 setup
+
+### Needs phone in hand
+- [ ] Install Termux, Termux:API, Termux:Boot from F-Droid
+- [ ] In Termux: `pkg install openssh && passwd && sshd`
+- [ ] Battery → Unrestricted for Termux, Termux:API, Termux:Boot, Tailscale
+- [ ] From Mac: `bash phone-setup/setup.sh pixel-5`
+- [ ] Install Spyglass APK (via ADB or termux-open)
+- [ ] Grant permissions, verify endpoints
+
+## Pending — features
+
+- [ ] `leye start` integration test (drop-in DroidCam replacement)
+- [ ] Implement actual recording (MediaRecorder)
+- [ ] Audio streaming at `/audio` (currently 501 stub)
+- [ ] Fix `/config` POST — "Not in application's main thread" error
+- [ ] Proper app icon
+- [ ] Migrate from deprecated `setTargetResolution` to `ResolutionSelector`
