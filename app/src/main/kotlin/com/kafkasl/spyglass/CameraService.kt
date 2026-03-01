@@ -157,22 +157,16 @@ class CameraService : LifecycleService() {
 
     private fun imageProxyToJpeg(image: ImageProxy, quality: Int): ByteArray? {
         return try {
-            val yBuffer = image.planes[0].buffer
-            val uBuffer = image.planes[1].buffer
-            val vBuffer = image.planes[2].buffer
-
-            val ySize = yBuffer.remaining()
-            val uSize = uBuffer.remaining()
-            val vSize = vBuffer.remaining()
-
-            val nv21 = ByteArray(ySize + uSize + vSize)
-            yBuffer.get(nv21, 0, ySize)
-            vBuffer.get(nv21, ySize, vSize)
-            uBuffer.get(nv21, ySize + vSize, uSize)
-
-            val yuvImage = YuvImage(nv21, ImageFormat.NV21, image.width, image.height, null)
+            val w = image.width
+            val h = image.height
+            val nv21 = YuvConverter.yuv420toNv21(
+                w, h,
+                image.planes[0].buffer, image.planes[1].buffer, image.planes[2].buffer,
+                image.planes[0].rowStride, image.planes[1].rowStride, image.planes[1].pixelStride
+            )
+            val yuvImage = YuvImage(nv21, ImageFormat.NV21, w, h, null)
             val out = ByteArrayOutputStream()
-            yuvImage.compressToJpeg(Rect(0, 0, image.width, image.height), quality, out)
+            yuvImage.compressToJpeg(Rect(0, 0, w, h), quality, out)
             out.toByteArray()
         } catch (e: Exception) {
             Log.w(TAG, "JPEG conversion failed", e)

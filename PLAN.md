@@ -51,14 +51,21 @@ ffplay http://pixel-5:4747/video          # Video stream works
 ## Mi A3 (while you have phones out)
 
 ### Needs physical tap
-- [ ] Install Termux:Boot from F-Droid (boot script already at `~/.termux/boot/start-sshd.sh`)
-- [ ] Open Termux:Boot once
-- [ ] Battery → Unrestricted for Termux:Boot
-- [ ] `ssh a3 "termux-open ~/storage/downloads/spyglass.apk"` → tap install
-- [ ] Open Spyglass → grant permissions
+- [x] Install Termux:Boot from F-Droid (boot script already at `~/.termux/boot/start-sshd.sh`)
+- [x] Open Termux:Boot once
+- [x] Battery → Unrestricted for Termux:Boot
+- [x] Install Spyglass APK (via `adb install` over Tailscale — no tap needed)
+- [x] Open Spyglass → grant permissions
+
+### Wireless ADB (enabled)
+```bash
+# Enabled via USB once, now permanent over Tailscale
+adb connect 100.100.122.107:5555
+adb install app/build/outputs/apk/debug/app-debug.apk  # silent install, no taps
+```
 
 ### Verify
-```bash
-curl http://a3:4747/status
-leye start   # drop-in DroidCam replacement test
-```
+- [x] `curl http://100.100.122.107:4747/status` — working (1280x720@15fps, battery 100%)
+- [x] `/snap` — JPEG OK
+- [x] `/video` — MJPEG streaming OK
+- [ ] `leye start` — drop-in DroidCam replacement test

@@ -69,10 +69,14 @@ GET  /audio              → 501 Not Implemented (stub)
 - **SpyglassServerTest** — all endpoints via real HTTP (starts server on port 0), path traversal, MJPEG streaming
 - **MjpegInputStreamTest** — boundary headers, multi-frame reads, byte-level read
 
+## Phone Setup
+
+See `phone-setup/SKILL.md` for setting up a phone with SSH over Tailscale (hardened sshd, key-only auth, auto-start). Run `phone-setup/setup.sh <hostname>` after the on-phone prerequisites.
+
 ## Deploy to phone
 
 ```bash
-# Via SSH + Termux
+# Via SSH + Termux (phone must be set up first — see phone-setup/)
 make install   # scp APK → phone, termux-open
 
 # Via ADB
