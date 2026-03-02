@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="logo.svg" alt="Spyglass" width="600">
+</p>
+
 # Spyglass
 
 Minimal Android camera server. Open-source alternative to DroidCam and IP Webcam — no ads, no accounts, fully scriptable.

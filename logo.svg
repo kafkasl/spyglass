@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 200" width="800" height="200" role="img" aria-label="Spyglass banner">
+  <defs>
+    <color id="accent-cyan">#06b6d4</color> <color id="accent-glow">#67e8f9</color> <color id="text-primary">#94a3b8</color> <color id="text-secondary">#64748b</color> <radialGradient id="lens-center-glow" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+      <stop offset="0%" style="stop-color:var(--accent-glow);stop-opacity:1" />
+      <stop offset="100%" style="stop-color:var(--accent-cyan);stop-opacity:1" />
+    </radialGradient>
+
+    <style>
+      .font-mono { font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, monospace; }
+      .enso-stroke { fill: var(--accent-cyan); }
+    </style>
+  </defs>
+
+  <g transform="translate(180, 100)">
+    <g transform="translate(-80, 0)">
+      <path class="enso-stroke" d="M-3.6,-56.8 C-22.3,-54.9 -39.4,-46.8 -52.4,-34 C-67.5,-19.1 -75.6,1.3 -73.8,22.4 C-72.1,41.9 -62.3,59.3 -47.5,71.5 C-32.8,83.8 -14.6,89.9 4.5,88.6 C 23.9,87.2 41.8,78.5 55.4,64.5 C 69.3,50.2 77.2,31.3 76.9,11.4 C 76.5,-8.7 68.4,-27.6 54.3,-41.8 C 40.6,-55.6 21.8,-64.2 2.3,-65.4 C -1.5,-65.6 -5.4,-65.4 -9.2,-64.8 L -8.2,-58.9 C -4.7,-59.4 -1.2,-59.6 2.2,-59.4 C 20.1,-58.3 37.3,-50.5 49.9,-37.9 C 62.8,-24.9 70.3,-7.7 70.7,10.6 C 71,28.9 63.8,46.3 51.1,59.3 C 38.7,72 22.4,79.9 4.7,81.2 C -12.7,82.5 -29.4,77 -42.8,65.8 C -56.4,54.6 -65.3,38.7 -66.9,21 C -68.6,1.9 -61.2,-16.6 -47.5,-30.2 C -35.6,-41.8 -20.1,-49.2 -3.1,-50.8 C 1.7,-51.3 6.6,-51.1 11.4,-50.5 L 12.4,-56.4 C 7.1,-55.8 1.8,-56 -3.6,-56.8 Z" opacity="0.9"/>
+      
+      <circle cx="0" cy="10" r="18" fill="#1e293b" /> <circle cx="0" cy="10" r="8" fill="url(#lens-center-glow)" /> </g>
+
+    <g transform="translate(40, 0)">
+      <text x="0" y="20" class="font-mono" fill="var(--text-primary)" font-size="64" font-weight="600" letter-spacing="-2">Spyglass</text>
+      
+      <text x="4" y="58" class="font-mono" font-size="18" font-weight="400">
+        <tspan fill="var(--text-secondary)">minimal android camera server </tspan>
+        <tspan fill="var(--accent-cyan)" font-weight="600">_curl/HTTP</tspan>
+      </text>
+    </g>
+  </g>
+</svg>
