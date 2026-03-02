@@ -1,109 +1,78 @@
-# 🔭 Spyglass
+# Spyglass
 
-Minimal Android camera server. Open source DroidCam replacement.
+Minimal Android camera server. Open-source alternative to DroidCam and IP Webcam — no ads, no accounts, fully scriptable.
 
-Streams MJPEG video from your Android phone over HTTP. Designed for headless operation — control everything via `curl`.
+Runs an HTTP server on port 4747. You get MJPEG streaming, snapshots, and config via `curl`.
 
-## Features
+## Install
 
-- **MJPEG video stream** at `/video` (compatible with ffmpeg, VLC, leye)
-- **JPEG snapshots** at `/snap`
-- **JSON status** with battery, disk space, config
-- **Runtime config** — switch cameras, change resolution/FPS via HTTP POST
-- **Recording** to phone storage with download endpoint
-- **Auto-start on boot** via BroadcastReceiver
-- **Wake lock** — keeps streaming with screen off
-- **Foreground service** — Android won't kill it
+Requires JDK 17 and Android SDK (platform 34).
 
-## HTTP API
-
-```
-GET  /video              MJPEG stream
-GET  /snap               Single JPEG snapshot
-GET  /status             JSON: config, recording state, battery, disk
-GET  /config             Current camera config
-POST /config             Update config: {"camera": 0|1, "resolution": "1280x720", "fps": 15}
-POST /record/start       Start recording
-POST /record/stop        Stop recording
-GET  /recordings         List recordings (JSON)
-GET  /recordings/<file>  Download a recording
-GET  /audio              Audio stream (not yet implemented)
-```
-
-## Quick Start
-
-### Build
 ```bash
-make build          # → app/build/outputs/apk/debug/app-debug.apk
+git clone https://github.com/kafkasl/spyglass.git && cd spyglass
+make build    # → app/build/outputs/apk/debug/app-debug.apk
 ```
 
-### Install
+Copy the APK to your phone (email, Drive, USB, whatever) and open it. Or if you have ADB set up: `make adb-install`.
+
+Open the app once to grant camera permissions. After that it auto-starts on boot as a foreground service.
+
+## Usage
+
 ```bash
-# Via SSH (Termux on phone)
-make install        # builds + scp + termux-open
+# snapshot
+curl http://phone:4747/snap > photo.jpg
 
-# Via ADB
-make adb-install
+# live stream (works with VLC, ffplay, mpv, or any MJPEG client)
+vlc http://phone:4747/video
+
+# status
+curl http://phone:4747/status
+```
+```json
+{"config":{"camera":0,"resolution":"1280x720","fps":15,"jpegQuality":80},
+ "recording":false,"battery":97,"disk":{"freeMB":52302},"uptime":76189}
 ```
 
-### Use
 ```bash
-# Check status
-curl http://<phone>:4747/status
+# switch to front camera
+curl -X POST http://phone:4747/config -d '{"camera": 1}'
 
-# Take a snapshot
-curl http://<phone>:4747/snap > photo.jpg
-
-# Watch live video
-ffplay http://<phone>:4747/video
-# or
-vlc http://<phone>:4747/video
-
-# Switch to front camera
-curl -X POST http://<phone>:4747/config -d '{"camera": 1}'
-
-# Use with leye (drop-in DroidCam replacement)
-export DROIDCAM_IP=<phone>
-leye start
+# record
+curl -X POST http://phone:4747/record/start
+curl -X POST http://phone:4747/record/stop
+curl http://phone:4747/recordings/vid.mp4 > vid.mp4
 ```
 
-## Requirements
+## API
 
-- **Phone**: Android 11+ (API 30)
-- **Build**: JDK 17, Android SDK (platform 34, build-tools 34)
-- **Deploy**: SSH access via Termux + Tailscale, or ADB
+| Endpoint | Method | Returns |
+|---|---|---|
+| `/video` | GET | MJPEG stream |
+| `/snap` | GET | Single JPEG |
+| `/status` | GET | JSON: config, battery, disk, uptime |
+| `/config` | GET/POST | Read or update config (partial JSON OK) |
+| `/record/start` | POST | Start recording |
+| `/record/stop` | POST | Stop recording |
+| `/recordings` | GET | List recorded files |
+| `/recordings/<file>` | GET | Download recording |
 
-## Project Structure
+## Deploy over SSH
 
+If you prefer deploying over the network instead of ADB (e.g. via Termux + Tailscale):
+
+```bash
+cp .env.example .env   # set PHONE_HOST to your phone's hostname/IP
+make install            # builds, scp's APK, opens on phone
 ```
-app/src/main/kotlin/com/kafkasl/spyglass/
-├── Config.kt          # CameraConfig data class + constants
-├── FrameBuffer.kt     # Thread-safe single-frame JPEG buffer
-├── SpyglassServer.kt  # NanoHTTPD server + MJPEG stream
-├── CameraService.kt   # Foreground service (camera + server lifecycle)
-├── MainActivity.kt    # Minimal UI (permissions + status display)
-└── BootReceiver.kt    # Auto-start on boot
-```
 
-## Configuration
-
-Create a `.env` file (see `.env.example`):
-```
-PHONE_HOST=your-phone-hostname
-SSH_PORT=8022
-```
+See [`phone-setup/`](phone-setup/) for a hardened SSH setup script.
 
 ## Tests
 
 ```bash
-make test
+make test   # 34 unit tests, plain JUnit (no emulator needed)
 ```
-
-34 unit tests covering:
-- `FrameBuffer` — thread safety, put/get/clear
-- `CameraConfig` — JSON serialization, partial updates, defaults
-- `SpyglassServer` — all HTTP endpoints, MJPEG streaming, path traversal protection
-- `MjpegInputStream` — frame encoding, boundary headers
 
 ## License
 
